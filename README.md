@@ -1,6 +1,12 @@
-# Part 7 — Lotion (logos + notion): a Notion-style local-first writer
+<p align="center">
+  <img src="lotion-ui/icons/lotion.png" alt="Lotion" width="120" height="120">
+</p>
 
-A two-module example that turns `storage_module` into a small Notion-style
+<h1 align="center">Lotion</h1>
+
+<p align="center"><em>logos + notion</em> — a Notion-style, local-first writer</p>
+
+A two-module app that turns `storage_module` into a small Notion-style
 writing app. You keep a **local workspace** of pages that open instantly
 and autosave offline; **publishing to logos-storage is optional and
 per-page**. Publish a page and you get back a shareable CID; paste someone
@@ -18,8 +24,7 @@ else's CID to read their article (and a password, if it's private).
   Pages edit and autosave locally; the app opens straight to your
   workspace without waiting on the network. Talks to `storage_module`
   directly via the `logos.callModule("storage_module", ...)` JS bridge
-  (same pattern as part 4's filesharing-ui) only when you publish or read
-  a remote CID.
+  only when you publish or read a remote CID.
 
 ## Architecture: why the storage calls live in QML, not C++
 
@@ -32,9 +37,9 @@ pegs CPU and hangs all subsequent IPC. Symptom: pressing **Start** in the
 UI does nothing, and Basecamp hangs.
 
 The QML/JS bridge runs on the main thread with `QCoreApplication`
-available, so the same calls succeed when made from `Main.qml`. That's why
-part 4's filesharing-ui works while filesharing-core (which uses the
-typed C++ wrapper) does not.
+available, so the same calls succeed when made from `Main.qml`. The
+takeaway: drive `storage_module` from QML, and keep `lotion-core` for the
+local workspace and crypto only.
 
 Split for this module:
 
@@ -109,8 +114,7 @@ cd ../lotion-ui
 nix build --override-input lotion path:../lotion-core '.#lgx-portable' --out-link result-portable
 ```
 
-`storage_module` is NOT pre-installed on Basecamp — install it separately
-(same step as part 4):
+`storage_module` is NOT pre-installed on Basecamp — install it separately:
 
 ```bash
 nix build github:logos-co/logos-storage-module --out-link /tmp/storage
@@ -142,7 +146,7 @@ LGX Package**.
 
 - **No discovery.** A CID is a fetch key, not a directory — share CIDs
   out-of-band. A `delivery_module` topic for "announce" messages would be
-  the natural next step (see parts 3 and 6).
+  the natural next step.
 - **No deletion-from-storage.** Deleting a page removes the local row; if it
   was published, the envelope stays on logos-storage forever (anyone who
   saved the CID can still fetch it — that's what content-addressing means).
