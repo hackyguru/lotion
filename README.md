@@ -12,6 +12,8 @@ and autosave offline; **publishing to logos-storage is optional and
 per-page**. Publish a page and you get back a shareable CID; paste someone
 else's CID to read their article (and a password, if it's private).
 
+![Lotion screenshot](screenshot.png)
+
 ## What's here
 
 - **`lotion-core/`** — C++ plugin. Owns the **local workspace** (a
