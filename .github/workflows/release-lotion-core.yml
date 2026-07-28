@@ -1,0 +1,29 @@
+name: Release lotion-core
+
+# Manually-triggered release for the `lotion` core module. Delegates the
+# build / verify / sign / publish pipeline to _release-module.yml so the
+# signing config lives in exactly one place.
+#
+# Source of truth for module name + version is lotion-core/metadata.json.
+# Bump `version` there and re-run this workflow to cut a new release; a
+# version that is already fully published is skipped unless you tick
+# "Force build".
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: "Force build — replace the current published release if it has the same version."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: ./.github/workflows/_release-module.yml
+    with:
+      module_path: lotion-core
+      force_build: ${{ inputs.force_build }}
+    secrets: inherit

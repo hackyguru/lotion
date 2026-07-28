@@ -1,0 +1,32 @@
+name: Release all lotion modules
+
+# Umbrella release: builds and publishes every module in this monorepo.
+# Handy after a version bump that touches both halves — otherwise just
+# run the individual "Release lotion-core" / "Release lotion-ui".
+#
+# Each leg is independent (`fail-fast: false`): a broken UI build must
+# not prevent the core from publishing. Modules whose version is already
+# published are skipped unless "Force build" is ticked.
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: "Force build — replace current published releases that have the same version."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        module_path: [lotion-core, lotion-ui]
+    uses: ./.github/workflows/_release-module.yml
+    with:
+      module_path: ${{ matrix.module_path }}
+      force_build: ${{ inputs.force_build }}
+    secrets: inherit
